@@ -6,4 +6,7 @@
     }
   ]
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> db45a7b (Fix SPA routing: Added vercel.json rewrites to prevent 404 on refresh)

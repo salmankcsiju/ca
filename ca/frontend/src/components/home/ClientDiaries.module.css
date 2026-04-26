@@ -1,0 +1,103 @@
+.section {
+  padding: 100px 24px;
+  background-color: var(--bg-muted);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.diaryCard {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.diaryCard:hover {
+  transform: translateY(-5px);
+}
+
+.imagesContainer {
+  display: flex;
+  height: 400px;
+}
+
+.imageHalf {
+  position: relative;
+  flex: 1;
+  height: 100%;
+}
+
+.imageHalf:first-child {
+  border-right: 1px solid var(--border-color);
+}
+
+.label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 10;
+}
+
+.content {
+  padding: 24px;
+  text-align: center;
+}
+
+.content h4 {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.content p {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.uploadSection {
+  margin-top: 40px;
+}
