@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Category, Product, ProductImage, ClientDiary, Order, OrderItem, ActivityLog
+from .models import User, Category, Product, ProductImage, ClientDiary, Order, OrderItem, ActivityLog, CustomizationOption, ChatMessage, AtelierSetting
 
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -43,3 +43,11 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(ClientDiary, ClientDiaryAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(ActivityLog)
+admin.site.register(ChatMessage)
+admin.site.register(AtelierSetting)
+
+@admin.register(CustomizationOption)
+class CustomizationOptionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'option_type', 'code', 'extra_price', 'is_active')
+    list_filter = ('option_type', 'is_active')
+    search_fields = ('name', 'code', 'description')

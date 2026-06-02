@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { MessageCircle } from "lucide-react";
@@ -11,10 +12,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isDashboard = pathname.startsWith("/dashboard");
 
   return (
-    <div className="flex flex-col min-h-screen bg-dark-900 text-white">
-      {!isDashboard && <Navbar />}
+    <div className={`flex flex-col min-h-screen ${isDashboard ? "bg-white text-gray-900" : "bg-[#FAF7F2] text-[#3B2F2F]"}`}>
+      {!isDashboard && (
+        <Suspense fallback={<div className="h-16 bg-[#FAF7F2] border-b border-[#D6B370]/10" />}>
+          <Navbar />
+        </Suspense>
+      )}
       
-      <main className={`flex-grow ${isDashboard ? "bg-dark-900" : ""}`}>
+      <main className={`flex-grow ${isDashboard ? "bg-[#f8fafc] text-gray-900" : ""}`}>
         {children}
       </main>
 

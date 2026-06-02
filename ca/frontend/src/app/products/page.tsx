@@ -127,7 +127,7 @@ function ProductsList() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-[3/4] bg-dark-950/80 animate-pulse border border-dark-800" />
+              <div key={i} className="aspect-[3/4] bg-[#F3E9DC]/60 animate-pulse border border-[#D6B370]/20 rounded-2xl" />
             ))}
           </div>
         ) : filteredProducts.length > 0 ? (
@@ -137,9 +137,9 @@ function ProductsList() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 space-y-4 border border-dark-800 luxury-glow">
-            <p className="font-serif text-lg text-white/60">No Outfits Found</p>
-            <p className="text-xs text-white/30 max-w-xs mx-auto leading-relaxed">
+          <div className="text-center py-24 space-y-4 border border-[#D6B370]/25 bg-white/40 shadow-xs rounded-2xl">
+            <p className="font-serif text-lg text-[#3B2F2F]">No Outfits Found</p>
+            <p className="text-xs text-[#3B2F2F]/60 max-w-xs mx-auto leading-relaxed">
               We couldn't find any designs matching your filter combinations. Try resetting filters.
             </p>
             <button
@@ -162,20 +162,20 @@ function ProductsList() {
 
 export default function ProductsPage() {
   return (
-    <div className="bg-dark-900 min-h-screen pt-32 pb-24 px-6 md:px-12">
+    <div className="bg-[#FAF7F2] min-h-screen pt-32 pb-24 px-6 md:px-12 text-[#3B2F2F]">
       {/* Catalog Header */}
       <div className="max-w-7xl mx-auto text-center space-y-4 mb-16">
-        <span className="text-xs uppercase tracking-[4px] text-gold-500 font-semibold">Atelier Collections</span>
-        <h1 className="font-serif text-4xl md:text-6xl text-white tracking-wide">All Designs</h1>
-        <p className="text-sm text-white/50 max-w-xl mx-auto font-light leading-relaxed">
+        <span className="text-xs uppercase tracking-[4px] text-[#D8A7B1] font-semibold">Atelier Collections</span>
+        <h1 className="font-serif text-4xl md:text-6xl text-[#3B2F2F] tracking-wide">All Designs</h1>
+        <p className="text-sm text-slate-500 max-w-xl mx-auto font-light leading-relaxed">
           Browse our selection of ready-to-order couture. Use standard sizing or request tailor-made fits.
         </p>
-        <div className="w-12 h-[1px] bg-gold-500/20 mx-auto mt-4" />
+        <div className="w-12 h-[1px] bg-[#D6B370]/20 mx-auto mt-4" />
       </div>
 
       <Suspense fallback={
         <div className="max-w-7xl mx-auto text-center py-20">
-          <p className="text-white/30 text-xs tracking-[2.5px] uppercase animate-pulse">Loading collections...</p>
+          <p className="text-slate-400 text-xs tracking-[2.5px] uppercase animate-pulse">Loading collections...</p>
         </div>
       }>
         <ProductsList />

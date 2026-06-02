@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
-from .models import User, Category, Product, ClientDiary, Order, ProductImage, ActivityLog
-from .serializers import UserSerializer, CategorySerializer, ProductSerializer, ClientDiarySerializer, OrderSerializer, ActivityLogSerializer
+from .models import User, Category, Product, ClientDiary, Order, OrderItem, ProductImage, ActivityLog, CustomizationOption, ChatMessage, AtelierSetting
+from .serializers import UserSerializer, CategorySerializer, ProductSerializer, ClientDiarySerializer, OrderSerializer, ActivityLogSerializer, CustomerSerializer, CustomizationOptionSerializer, ChatMessageSerializer, AtelierSettingSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -33,9 +33,14 @@ def login_or_register(request):
         'is_new': created
     })
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
+    if request.method in ['PUT', 'PATCH']:
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
     return Response(UserSerializer(request.user).data)
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -120,7 +125,10 @@ class ClientDiaryViewSet(viewsets.ModelViewSet):
         return ClientDiary.objects.filter(is_approved=True).order_by('-created_at')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if self.request.user.is_staff and 'user' in serializer.validated_data:
+            serializer.save()
+        else:
+            serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
         old_diary = self.get_object()
@@ -233,6 +241,15 @@ class ActivityLogViewSet(viewsets.ReadOnlyModelViewSet):
             return ActivityLog.objects.all().order_by('-timestamp')
         return ActivityLog.objects.none()
 
+class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return User.objects.filter(is_staff=False).prefetch_related('orders', 'orders__items', 'orders__items__product').order_by('-date_joined')
+        return User.objects.none()
+
 class AnalyticsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -285,3 +302,131 @@ class AnalyticsView(APIView):
             "top_products": top_products,
             "chart_data": chart_data
         })
+
+
+class CustomizationOptionViewSet(viewsets.ModelViewSet):
+    queryset = CustomizationOption.objects.all()
+    serializer_class = CustomizationOptionSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return CustomizationOption.objects.filter(is_active=True)
+
+    def list(self, request, *args, **kwargs):
+        # Auto-seed if empty
+        if not CustomizationOption.objects.exists():
+            default_options = [
+                # Sleeves
+                ('sleeve', 'Sleeveless', 'sleeveless', 0, ''),
+                ('sleeve', 'Puff Sleeve', 'puff', 0, ''),
+                ('sleeve', 'Full Sleeve', 'full', 0, ''),
+                ('sleeve', 'Balloon Sleeve', 'balloon', 0, ''),
+                # Necks
+                ('neck', 'Round Neck', 'round', 0, ''),
+                ('neck', 'V-Neck', 'vneck', 0, ''),
+                ('neck', 'Square Neck', 'square', 0, ''),
+                # Lengths
+                ('length', 'Short Dress', 'short', 0, ''),
+                ('length', 'Midi Dress', 'midi', 0, ''),
+                ('length', 'Maxi Dress', 'maxi', 0, ''),
+                # Fabrics
+                ('fabric', 'Premium Silk', 'silk', 0, 'Glossy and luxurious'),
+                ('fabric', 'Lustrous Satin', 'satin', 0, 'Smooth drape, high sheen'),
+                ('fabric', 'Pure Linen', 'linen', 0, 'Lightweight, breathable'),
+                ('fabric', 'Soft Cotton', 'cotton', 0, 'Comfortable everyday wear'),
+                # Colors
+                ('color', 'Blush Rose', 'rose', 0, '#E8C5C8'),
+                ('color', 'Lavender Glow', 'lavender', 0, '#E2D9F3'),
+                ('color', 'Oatmeal Beige', 'beige', 0, '#E8DFD3'),
+                ('color', 'Soft Cream', 'cream', 0, '#FAF6EE'),
+                ('color', 'Cabernet Wine', 'wine', 0, '#5C1D24'),
+            ]
+            for opt_type, name, code, price, desc in default_options:
+                CustomizationOption.objects.create(
+                    option_type=opt_type,
+                    name=name,
+                    code=code,
+                    extra_price=price,
+                    description=desc
+                )
+        return super().list(request, *args, **kwargs)
+
+
+class ChatMessageViewSet(viewsets.ModelViewSet):
+    serializer_class = ChatMessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            queryset = ChatMessage.objects.all()
+            customer_param = self.request.query_params.get('customer')
+            if customer_param:
+                queryset = queryset.filter(customer_id=customer_param)
+            return queryset.order_by('timestamp')
+        
+        return ChatMessage.objects.filter(customer=user).order_by('timestamp')
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_staff:
+            customer_id = self.request.data.get('customer')
+            if not customer_id:
+                raise serializers.ValidationError({"customer": "This field is required for staff replies."})
+            try:
+                customer = User.objects.get(id=customer_id)
+            except User.DoesNotExist:
+                raise serializers.ValidationError({"customer": "Customer user does not exist."})
+            serializer.save(sender=user, customer=customer)
+        else:
+            serializer.save(sender=user, customer=user)
+
+    @action(detail=False, methods=['post'])
+    def mark_read(self, request):
+        user = request.user
+        if user.is_staff:
+            customer_id = request.data.get('customer')
+            if not customer_id:
+                return Response({'error': 'Customer ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            ChatMessage.objects.filter(customer_id=customer_id, sender__is_staff=False).update(is_read=True)
+        else:
+            ChatMessage.objects.filter(customer=user, sender__is_staff=True).update(is_read=True)
+        return Response({'status': 'messages marked as read'})
+
+
+class AtelierSettingViewSet(viewsets.ModelViewSet):
+    queryset = AtelierSetting.objects.all()
+    serializer_class = AtelierSettingSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def list(self, request, *args, **kwargs):
+        if not AtelierSetting.objects.exists():
+            default_settings = {
+                "brand_name": "CASA AMORA",
+                "description": "Casa Amora is a luxury bespoke boutique offering personalized sewing, premium fabrics, and private bridal consultations. Meet our master couturiers to sketch, fit, and build your dream closet.",
+                "address": "Casa Amora Atelier, Marine Drive, Kochi, Kerala — 682031",
+                "helpline": "+91 98765 43210 (Toll Free)",
+                "email": "boutique@casaamora.com",
+                "hours": "Mon — Sat: 10:00 AM — 08:00 PM IST",
+                "whatsapp": "919876543210"
+            }
+            for k, v in default_settings.items():
+                AtelierSetting.objects.create(key=k, value=v)
+        return super().list(request, *args, **kwargs)
+
+    @action(detail=False, methods=['post'])
+    def update_batch(self, request):
+        if not request.user.is_staff:
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        data = request.data
+        for k, v in data.items():
+            AtelierSetting.objects.update_or_create(key=k, defaults={'value': v})
+            
+        return Response({'status': 'Settings updated successfully'})
+
+

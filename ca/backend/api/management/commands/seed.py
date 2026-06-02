@@ -135,21 +135,62 @@ class Command(BaseCommand):
                         custom_measurements=custom
                     )
 
-        # Create Client Diaries Lookbook (Approved & Unapproved)
-        # Avoid duplicate diary entries
-        if not ClientDiary.objects.exists():
-            ClientDiary.objects.create(
-                user=clients[0],
-                product=products[0],
-                review_text="Beautiful velvet fabric! Got so many compliments at the wedding.",
-                is_approved=True
-            )
-            ClientDiary.objects.create(
-                user=clients[1],
-                product=products[1],
-                review_text="Perfect custom stitching! The fit is incredibly precise.",
-                is_approved=False
-            )
+        # Create Client Diaries & Testimonials (clear existing ones to force seed)
+        ClientDiary.objects.all().delete()
+        
+        # 1. Aiswarya - Velvet Maxi Dress (With photo, Approved)
+        ClientDiary.objects.create(
+            user=clients[0],
+            product=products[0],
+            client_image="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600",
+            review_text="The Velvet Maxi Dress fits like an absolute dream! The gold custom embroidery is stunning and received so many compliments.",
+            is_approved=True
+        )
+
+        # 2. Meera Nair - Silk Churidhar Set (No photo, Pending)
+        ClientDiary.objects.create(
+            user=clients[1],
+            product=products[1],
+            client_image="",
+            review_text="Superb custom tailoring. The Royal Blue tussar silk is incredibly soft and standard sizes are perfectly accurate.",
+            is_approved=False
+        )
+
+        # 3. Anjali Krishna - Premium Linen Abaya (With photo, Pending)
+        ClientDiary.objects.create(
+            user=clients[2],
+            product=products[2],
+            client_image="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=600",
+            review_text="This Linen Abaya is lightweight and perfect for warm weather. The black piping looks so elegant and premium.",
+            is_approved=False
+        )
+
+        # 4. Shruti Suresh - Organza Floral Saree (No photo, Approved)
+        ClientDiary.objects.create(
+            user=clients[3],
+            product=products[3],
+            client_image="",
+            review_text="Absolutely lovely pastel pink organza. The floral motifs are subtle and gorgeous. Excellent customer service!",
+            is_approved=True
+        )
+
+        # 5. Aiswarya - Casual Cotton Kurthy (With photo, Pending)
+        ClientDiary.objects.create(
+            user=clients[0],
+            product=products[4],
+            client_image="https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=600",
+            review_text="Everyday comfort at its best. Indigo block print color is deep and didn't fade after washing. Love it!",
+            is_approved=False
+        )
+
+        # 6. Meera Nair - Embroidered Frock (No photo, Approved)
+        ClientDiary.objects.create(
+            user=clients[1],
+            product=products[5],
+            client_image="",
+            review_text="Perfect birthday frock for my little girl! She looked like a princess in the pearl white A-line dress.",
+            is_approved=True
+        )
 
         # Create dummy staff users
         staff_data = [

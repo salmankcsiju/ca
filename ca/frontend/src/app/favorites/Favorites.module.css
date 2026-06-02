@@ -6,13 +6,15 @@
 }
 
 .pageTitle {
+  font-family: var(--font-serif);
   font-size: 2.5rem;
   margin-bottom: 40px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  text-transform: none;
+  letter-spacing: 1px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 16px;
   text-align: center;
+  color: var(--text-color);
 }
 
 .emptyState {

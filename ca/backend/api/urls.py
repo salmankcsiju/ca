@@ -10,6 +10,11 @@ router.register(r'diaries', views.ClientDiaryViewSet)
 router.register(r'orders', views.OrderViewSet)
 router.register(r'staff', views.StaffViewSet, basename='staff')
 router.register(r'logs', views.ActivityLogViewSet, basename='logs')
+router.register(r'customers', views.CustomerViewSet, basename='customers')
+router.register(r'customization-options', views.CustomizationOptionViewSet, basename='customization-options')
+router.register(r'messages', views.ChatMessageViewSet, basename='messages')
+router.register(r'settings', views.AtelierSettingViewSet, basename='settings')
+
 
 urlpatterns = [
     path('auth/login/', views.login_or_register, name='login_or_register'),

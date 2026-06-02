@@ -53,52 +53,52 @@ export default function SidebarFilter({
       {/* Sidebar Overlay (Mobile only) */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar Panel */}
       <aside
-        className={`fixed md:sticky top-0 md:top-24 left-0 h-full md:h-auto w-[280px] md:w-auto bg-dark-950 md:bg-transparent border-r md:border-r-0 border-dark-800 z-40 md:z-10 p-6 md:p-0 transition-transform duration-350 ease-out overflow-y-auto ${
+        className={`fixed md:sticky top-0 md:top-24 left-0 h-full md:h-auto w-[280px] md:w-auto bg-[#FAF7F2] md:bg-transparent border-r md:border-r-0 border-[#D6B370]/20 z-40 md:z-10 p-6 md:p-0 transition-transform duration-350 ease-out overflow-y-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         <div className="flex md:hidden justify-between items-center mb-6">
-          <h3 className="font-serif text-lg text-white">Filters</h3>
-          <button className="text-white hover:text-gold-500" onClick={() => setIsOpen(false)}>
+          <h3 className="font-serif text-lg text-[#3B2F2F]">Filters</h3>
+          <button className="text-[#3B2F2F] hover:text-[#D8A7B1]" onClick={() => setIsOpen(false)}>
             <X size={20} />
           </button>
         </div>
 
         {/* Search filter */}
         <div className="mb-8">
-          <div className="relative flex items-center border border-white/10 focus-within:border-gold-500 transition-colors">
-            <Search size={16} className="absolute left-3 text-white/30" />
+          <div className="relative flex items-center border border-[#D6B370]/30 focus-within:border-[#D8A7B1] bg-white/60 transition-colors rounded-full shadow-2xs">
+            <Search size={16} className="absolute left-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent text-sm py-3 pl-10 pr-4 w-full outline-none text-white placeholder-white/30"
+              className="bg-transparent text-sm py-3 pl-11 pr-4 w-full outline-none text-[#3B2F2F] placeholder-slate-400"
             />
           </div>
         </div>
 
         {/* Categories checklist */}
         <div className="mb-8">
-          <h4 className="font-serif text-xs uppercase tracking-[2px] text-gold-500 mb-4 border-b border-dark-800 pb-2">
+          <h4 className="font-serif text-xs uppercase tracking-[2px] text-[#D6B370] mb-4 border-b border-[#D6B370]/25 pb-2">
             Categories
           </h4>
-          <div className="flex flex-col space-y-2 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex flex-col space-y-2.5 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
             {categories.map((cat) => (
-              <label key={cat.id} className="flex items-center space-x-3 cursor-pointer group text-sm text-white/70 hover:text-white">
+              <label key={cat.id} className="flex items-center space-x-3 cursor-pointer group text-sm text-[#3B2F2F]/80 hover:text-[#D8A7B1] transition-colors">
                 <input
                   type="radio"
                   name="category"
                   checked={selectedCategory === cat.id}
                   onChange={() => setSelectedCategory(cat.id)}
-                  className="accent-gold-500 h-4 w-4 bg-transparent border-white/20"
+                  className="accent-[#D8A7B1] h-4 w-4 bg-transparent border-[#D6B370]/30 cursor-pointer"
                 />
                 <span className="font-light">{cat.label}</span>
               </label>
@@ -108,10 +108,10 @@ export default function SidebarFilter({
 
         {/* Price Ranges selection */}
         <div className="mb-8">
-          <h4 className="font-serif text-xs uppercase tracking-[2px] text-gold-500 mb-4 border-b border-dark-800 pb-2">
+          <h4 className="font-serif text-xs uppercase tracking-[2px] text-[#D8A7B1] mb-4 border-b border-[#D6B370]/25 pb-2">
             Price Range
           </h4>
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2.5">
             {[
               { id: "all", label: "All Prices" },
               { id: "under1000", label: "Under ₹1,000" },
@@ -119,13 +119,13 @@ export default function SidebarFilter({
               { id: "3000to5000", label: "₹3,000 - ₹5,000" },
               { id: "above5000", label: "Above ₹5,000" }
             ].map((range) => (
-              <label key={range.id} className="flex items-center space-x-3 cursor-pointer text-sm text-white/70 hover:text-white">
+              <label key={range.id} className="flex items-center space-x-3 cursor-pointer text-sm text-[#3B2F2F]/80 hover:text-[#D8A7B1] transition-colors">
                 <input
                   type="radio"
                   name="price"
                   checked={priceRange === range.id}
                   onChange={() => setPriceRange(range.id)}
-                  className="accent-gold-500 h-4 w-4"
+                  className="accent-[#D8A7B1] h-4 w-4 cursor-pointer"
                 />
                 <span className="font-light">{range.label}</span>
               </label>
@@ -135,13 +135,13 @@ export default function SidebarFilter({
 
         {/* Sorting Dropdown */}
         <div className="mb-8">
-          <h4 className="font-serif text-xs uppercase tracking-[2px] text-gold-500 mb-4 border-b border-dark-800 pb-2">
+          <h4 className="font-serif text-xs uppercase tracking-[2px] text-[#D6B370] mb-4 border-b border-[#D6B370]/25 pb-2">
             Sort By
           </h4>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="w-full bg-dark-950 border border-white/10 p-3 text-sm outline-none text-white focus:border-gold-500 transition-colors"
+            className="w-full bg-white/60 border border-[#D6B370]/30 p-3 text-sm outline-none text-[#3B2F2F] focus:border-[#D8A7B1] transition-colors rounded-xl shadow-2xs"
           >
             <option value="recommended">Recommended</option>
             <option value="newest">Newest Arrivals</option>
