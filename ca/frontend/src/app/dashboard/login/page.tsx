@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { fetchApi } from "@/lib/api";
+import { fetchApi, API_BASE_URL } from "@/lib/api";
 import styles from "../Dashboard.module.css";
 
 export default function StaffLoginPage() {
@@ -34,7 +34,7 @@ export default function StaffLoginPage() {
     setLoginError("");
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api"}/auth/admin/token/`, {
+      const response = await fetch(`${API_BASE_URL}/auth/admin/token/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
