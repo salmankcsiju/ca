@@ -429,4 +429,42 @@ class AtelierSettingViewSet(viewsets.ModelViewSet):
             
         return Response({'status': 'Settings updated successfully'})
 
+import io
+from django.core.management import call_command
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def run_migrations_view(request):
+    out = io.StringIO()
+    err = io.StringIO()
+    try:
+        call_command('migrate', interactive=False, stdout=out, stderr=err)
+        migration_output = out.getvalue()
+        migration_error = err.getvalue()
+        
+        # Try to seed as well
+        seed_out = io.StringIO()
+        seed_err = io.StringIO()
+        call_command('seed', stdout=seed_out, stderr=seed_err)
+        seed_output = seed_out.getvalue()
+        seed_error = seed_err.getvalue()
+        
+        return Response({
+            'status': 'success',
+            'migration_output': migration_output,
+            'migration_error': migration_error,
+            'seed_output': seed_output,
+            'seed_error': seed_error
+        })
+    except Exception as e:
+        import traceback
+        return Response({
+            'status': 'error',
+            'error': str(e),
+            'traceback': traceback.format_exc(),
+            'migration_output': out.getvalue(),
+            'migration_error': err.getvalue()
+        }, status=500)
+
+
 

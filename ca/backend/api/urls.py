@@ -21,5 +21,6 @@ urlpatterns = [
     path('auth/me/', views.get_user_profile, name='user_profile'),
     path('auth/admin/token/', obtain_auth_token, name='admin_token'),
     path('analytics/', views.AnalyticsView.as_view(), name='analytics'),
+    path('run-migrations/', views.run_migrations_view, name='run_migrations'),
     path('', include(router.urls)),
 ]
