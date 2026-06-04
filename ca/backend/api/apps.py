@@ -6,6 +6,19 @@ class ApiConfig(AppConfig):
     name = 'api'
 
     def ready(self):
+        # 1. Run migrations and seed the database if it is empty (crucial for stateless SQLite on Render)
+        try:
+            from django.core.management import call_command
+            call_command('migrate', interactive=False)
+            
+            # Check if we should seed the database
+            from api.models import Product
+            if Product.objects.count() == 0:
+                call_command('seed')
+        except Exception:
+            pass
+
+        # 2. Ensure superuser exists and has correct password/credentials
         try:
             from django.contrib.auth import get_user_model
             from django.conf import settings
@@ -31,5 +44,6 @@ class ApiConfig(AppConfig):
                 user.save()
         except Exception:
             pass
+
 
 
