@@ -1,5 +1,13 @@
 // Dynamically resolve API URL based on current browser hostname
 function getApiBaseUrl() {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    // If running in production (not localhost/127.0.0.1), use the correct Render backend
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return "https://ca-rtfj.onrender.com/api";
+    }
+  }
+
   let apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (apiUrl) {
     apiUrl = apiUrl.trim();
@@ -24,6 +32,7 @@ function getApiBaseUrl() {
   }
   return "http://127.0.0.1:8000/api";
 }
+
 
 
 export const API_BASE_URL = getApiBaseUrl();
