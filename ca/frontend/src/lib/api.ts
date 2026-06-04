@@ -1,13 +1,30 @@
 // Dynamically resolve API URL based on current browser hostname
 function getApiBaseUrl() {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
+  let apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (apiUrl) {
+    apiUrl = apiUrl.trim();
+    // Fix single slash protocol typos (e.g. https:/ca-rtfj.onrender.com)
+    if (apiUrl.startsWith("https:/") && !apiUrl.startsWith("https://")) {
+      apiUrl = apiUrl.replace("https:/", "https://");
+    } else if (apiUrl.startsWith("http:/") && !apiUrl.startsWith("http://")) {
+      apiUrl = apiUrl.replace("http:/", "http://");
+    }
+    
+    // Ensure the API URL ends with /api
+    if (!apiUrl.endsWith("/api") && !apiUrl.endsWith("/api/")) {
+      if (apiUrl.endsWith("/")) {
+        apiUrl = apiUrl.slice(0, -1);
+      }
+      apiUrl = `${apiUrl}/api`;
+    }
+    return apiUrl;
   }
   if (typeof window !== "undefined") {
     return `http://${window.location.hostname}:8000/api`;
   }
   return "http://127.0.0.1:8000/api";
 }
+
 
 export const API_BASE_URL = getApiBaseUrl();
 
