@@ -467,4 +467,26 @@ def run_migrations_view(request):
         }, status=500)
 
 
+from rest_framework.authtoken.views import ObtainAuthToken
+
+class CustomObtainAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        # 1. Run migrations and seed on-demand
+        try:
+            from django.core.management import call_command
+            call_command('migrate', interactive=False)
+            
+            from api.models import Product
+            if Product.objects.count() == 0:
+                call_command('seed')
+        except Exception as e:
+            print(f"Error executing on-demand migrations/seeding: {e}")
+            
+        # 2. Call standard ObtainAuthToken logic
+        return super().post(request, *args, **kwargs)
+
+obtain_auth_token = CustomObtainAuthToken.as_view()
+
+
+
 
