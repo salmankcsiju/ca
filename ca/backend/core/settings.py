@@ -103,10 +103,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Superuser credentials for auto-creation on startup
-SUPERUSER_USERNAME = os.environ.get('SUPERUSER_USERNAME', 'salman')
-SUPERUSER_PASSWORD = os.environ.get('SUPERUSER_PASSWORD', 'sumi')
-SUPERUSER_EMAIL = os.environ.get('SUPERUSER_EMAIL', 'salmankcsiju@gmail.com')
-SUPERUSER_PHONE = os.environ.get('SUPERUSER_PHONE', '7356198300')
+# Superuser configuration is now handled manually on deployment environment.
 
 

@@ -4,44 +4,11 @@ from django.db import migrations
 from django.conf import settings
 
 def create_superuser_run(apps, schema_editor):
-    # Retrieve our custom User model
-    User = apps.get_model('api', 'User')
-    from django.contrib.auth.hashers import make_password
-    
-    username = getattr(settings, 'SUPERUSER_USERNAME', 'salman')
-    email = getattr(settings, 'SUPERUSER_EMAIL', 'salmankcsiju@gmail.com')
-    password = getattr(settings, 'SUPERUSER_PASSWORD', 'sumi')
-    phone_number = getattr(settings, 'SUPERUSER_PHONE', '7356198300')
-
-    # Since we are inside a migration, the mock model doesn't have set_password method.
-    # We will use make_password directly to encrypt the password before saving.
-    hashed_password = make_password(password)
-    
-    if not User.objects.filter(username=username).exists():
-        # Create user
-        user = User(
-            username=username,
-            email=email,
-            password=hashed_password,
-            phone_number=phone_number,
-            is_staff=True,
-            is_superuser=True,
-            is_active=True
-        )
-        user.save()
-    else:
-        # Update password and make sure is_superuser is True
-        user = User.objects.get(username=username)
-        user.password = hashed_password
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
+    pass
 
 
 def reverse_superuser_run(apps, schema_editor):
-    User = apps.get_model('api', 'User')
-    username = getattr(settings, 'SUPERUSER_USERNAME', 'salman')
-    User.objects.filter(username=username).delete()
+    pass
 
 class Migration(migrations.Migration):
 
