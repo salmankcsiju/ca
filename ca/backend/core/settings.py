@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-9sul1db&0xhz#cp8u06!4fow=grl=jrb^_hv^yu#efb$9bq8g#
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['salmankcsiju.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -91,7 +91,10 @@ AUTH_USER_MODEL = 'api.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://ca-peach.vercel.app",
+    "http://localhost:3000", 
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
