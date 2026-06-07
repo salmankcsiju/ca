@@ -2,9 +2,9 @@
 function getApiBaseUrl() {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
-    // If running in production (not localhost/127.0.0.1), use the correct Render backend
+    // If running in production (not localhost/127.0.0.1), use the correct PythonAnywhere backend
     if (hostname !== "localhost" && hostname !== "127.0.0.1") {
-      return "https://ca-rtfj.onrender.com/api";
+      return "https://salmankcsiju.pythonanywhere.com/api";
     }
   }
 
