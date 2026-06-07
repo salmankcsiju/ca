@@ -8,7 +8,7 @@ import {
   X, Plus, Check, Trash2, FolderPlus, RefreshCw, 
   ShoppingBag, Shirt, FolderOpen, Image as ImageIcon, User, LogOut,
   ShieldCheck, BarChart3, Settings, ShieldAlert, KeyRound, Calendar,
-  Users, MessageCircle, ChevronLeft, ChevronRight, Bell
+  Users, MessageCircle, ChevronLeft, ChevronRight, Bell, Menu, ArrowLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("analytics");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Staff User Information
   const [staffInfo, setStaffInfo] = useState<any>(null);
@@ -743,10 +744,18 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="flex h-screen bg-[#FAF8F5] text-[#3A2A2B] font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#FAF8F5] text-[#3A2A2B] font-sans overflow-hidden relative">
       
+      {/* Mobile Sidebar Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 z-45 md:hidden transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* LEFT SIDEBAR PANEL */}
-      <aside className="w-[280px] h-full bg-[#F3EDE2] border-r border-[#E5DAC6] flex flex-col justify-between shrink-0 overflow-y-auto">
+      <aside className={`w-[280px] h-full bg-[#F3EDE2] border-r border-[#E5DAC6] flex flex-col justify-between shrink-0 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="p-6 space-y-8">
           <div className="space-y-1">
             <span className="text-[0.65rem] uppercase tracking-[4px] text-[#A8854A] font-semibold">Atelier ERP</span>
@@ -780,7 +789,10 @@ export default function DashboardPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
+                onClick={() => {
+                  setActiveTab(tab.id as TabType);
+                  setIsSidebarOpen(false);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium tracking-wide transition-all cursor-pointer ${
                   activeTab === tab.id 
                     ? "bg-[#722F37] text-white font-semibold shadow-xs" 
@@ -819,15 +831,30 @@ export default function DashboardPage() {
       </aside>
 
       {/* MAIN CONTENT WORKSPACE */}
-      <main className="flex-grow h-full p-10 overflow-y-auto max-w-7xl">
+      <main className="flex-grow h-full p-4 md:p-10 overflow-y-auto max-w-7xl w-full">
         
+        {/* Mobile Header Bar */}
+        <div className="flex md:hidden items-center justify-between bg-[#F3EDE2] border border-[#E5DAC6] p-3 mb-6 rounded-xs">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 text-[#5C4A4B] hover:text-[#722F37]"
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+            <span className="font-serif font-bold text-sm tracking-[1px] text-[#722F37]">CASA AMORA</span>
+          </div>
+          <span className="text-[10px] font-semibold uppercase bg-[#722F37] text-white px-2 py-0.5 rounded">Atelier</span>
+        </div>
+
         {/* HEADER SECTION */}
-        <header className="flex justify-between items-center mb-8 border-b border-[#E5DAC6] pb-6">
+        <header className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8 border-b border-[#E5DAC6] pb-6">
           <div className="space-y-1">
             <h1 className="font-serif text-3xl tracking-wide text-[#2C1A1B] capitalize">{activeTab.replace("_", " ")}</h1>
             <p className="text-xs text-[#6B5A5B] font-light">Casa Amora Luxury Atelier Management Command Panel</p>
           </div>
-          <div className="flex items-center gap-4 relative">
+          <div className="flex flex-wrap items-center gap-3 relative">
             
             <button
               onClick={() => router.push("/dashboard/live-orders")}
@@ -1966,7 +1993,7 @@ export default function DashboardPage() {
               <div className="flex h-[calc(100vh-160px)] border border-[#E5DAC6] rounded-xs overflow-hidden bg-white shadow-xs">
                 
                 {/* Left Panel: Conversation Thread List */}
-                <div className="w-[320px] border-r border-[#E5DAC6] flex flex-col bg-[#FCFAF7]/50 shrink-0">
+                <div className={`border-r border-[#E5DAC6] flex flex-col bg-[#FCFAF7]/50 shrink-0 w-full md:w-[320px] ${selectedChatCustomerId !== null ? "hidden md:flex" : "flex"}`}>
                   <div className="p-4 border-b border-[#E5DAC6] bg-[#FCFAF7]">
                     <h3 className="font-serif text-sm font-semibold tracking-wider text-[#2C1A1B] uppercase">Client Support Inbox</h3>
                     <p className="text-[10px] text-[#6B5A5B] font-light mt-0.5">Manage user design inquiries</p>
@@ -2020,7 +2047,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Right Panel: Conversation Space */}
-                <div className="flex-1 flex flex-col bg-white overflow-hidden h-full">
+                <div className={`flex-1 flex flex-col bg-white overflow-hidden h-full ${selectedChatCustomerId === null ? "hidden md:flex" : "flex"}`}>
                   {!selectedChatCustomerId ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center p-8 my-auto">
                       <MessageCircle size={32} className="text-[#A8854A]/40 mb-2" />
@@ -2036,9 +2063,19 @@ export default function DashboardPage() {
                         const activeChat = getConversations().find(c => c.customerId === selectedChatCustomerId);
                         return (
                           <div className="px-6 py-4 border-b border-[#E5DAC6] bg-[#FCFAF7] flex justify-between items-center shrink-0">
-                            <div>
-                              <h4 className="text-xs font-semibold text-[#2C1A1B]">{activeChat?.customerName || "Customer"}</h4>
-                              <p className="text-[10px] text-[#A8854A] font-medium mt-0.5">{activeChat?.phone}</p>
+                            <div className="flex items-center gap-3">
+                              {/* Mobile Back Button */}
+                              <button
+                                onClick={() => setSelectedChatCustomerId(null)}
+                                className="md:hidden p-1.5 border border-[#E5DAC6] hover:border-[#722F37] text-[#6B5A5B] hover:text-[#722F37] rounded-xs transition-all cursor-pointer flex items-center justify-center"
+                                aria-label="Back to chat list"
+                              >
+                                <ArrowLeft size={16} />
+                              </button>
+                              <div>
+                                <h4 className="text-xs font-semibold text-[#2C1A1B]">{activeChat?.customerName || "Customer"}</h4>
+                                <p className="text-[10px] text-[#A8854A] font-medium mt-0.5">{activeChat?.phone}</p>
+                              </div>
                             </div>
                             <span className="text-[9px] uppercase tracking-[1px] text-slate-400 font-light">
                               Direct Support Line
@@ -2314,12 +2351,12 @@ export default function DashboardPage() {
       {/* DETAILED ORDER OVERLAY DIALOG */}
       <AnimatePresence>
         {selectedOrder && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 md:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="max-w-2xl w-full bg-[#FCFAF7] border border-[#EBE2D5] p-8 space-y-6 overflow-y-auto max-h-[90vh] shadow-lg text-[#3A2A2B]"
+              className="max-w-2xl w-full bg-[#FCFAF7] border border-[#EBE2D5] p-4 md:p-8 space-y-6 overflow-y-auto max-h-[90vh] shadow-lg text-[#3A2A2B]"
             >
               
               <div className="flex justify-between items-center border-b border-[#E5DAC6] pb-4">
@@ -2330,7 +2367,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-6 text-xs font-light text-[#3A2A2B]">
-                <div className="grid grid-cols-2 gap-4 bg-[#FAF8F5] p-4 border border-[#E5DAC6]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FAF8F5] p-4 border border-[#E5DAC6]">
                   <div>
                     <span className="text-[#6B5A5B] font-semibold block mb-1">CLIENT NAME</span>
                     <p className="text-[#2C1A1B] font-medium text-sm">{selectedOrder.user_name}</p>
@@ -2414,12 +2451,12 @@ export default function DashboardPage() {
       {/* DETAILED CUSTOMER OVERLAY DIALOG */}
       <AnimatePresence>
         {selectedCustomer && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 md:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="max-w-2xl w-full bg-[#FCFAF7] border border-[#EBE2D5] p-8 space-y-6 overflow-y-auto max-h-[90vh] shadow-lg text-[#3A2A2B]"
+              className="max-w-2xl w-full bg-[#FCFAF7] border border-[#EBE2D5] p-4 md:p-8 space-y-6 overflow-y-auto max-h-[90vh] shadow-lg text-[#3A2A2B]"
             >
               
               <div className="flex justify-between items-center border-b border-[#E5DAC6] pb-4">
@@ -2432,7 +2469,7 @@ export default function DashboardPage() {
               <div className="space-y-6 text-xs font-light text-[#3A2A2B]">
                 
                 {/* Profile Grid */}
-                <div className="grid grid-cols-2 gap-4 bg-[#FAF8F5] p-4 border border-[#E5DAC6]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FAF8F5] p-4 border border-[#E5DAC6]">
                   <div>
                     <span className="text-[#6B5A5B] font-semibold block mb-1">PHONE NUMBER</span>
                     <p className="text-[#2C1A1B] font-medium text-sm">{selectedCustomer.phone_number}</p>
